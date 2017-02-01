@@ -1,0 +1,4 @@
+cordova plugin add https://github.com/EddyVerbruggen/cordova-plugin-googleplus --variable REVERSED_CLIENT_ID="com.googleusercontent.apps.54415984672-5r7nn4rddo9j2sg6o9e8ddq0ec4j7ji8"
+cordova prepare
+
+Elsa font

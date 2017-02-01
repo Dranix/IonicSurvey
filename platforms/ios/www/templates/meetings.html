@@ -1,0 +1,33 @@
+<ion-view title="Meetings" id="page7">
+  <ion-nav-buttons side="right" class="has-header">
+    <button class="button button-icon icon No Icon" ng-click="logout()"> Log out</button>
+  </ion-nav-buttons>
+  <ion-content padding="false" class="has-header">
+    <ion-refresher pulling-text="Pull to refresh..." on-refresh="loadData()">
+    </ion-refresher>
+    <ion-list id="meetings-list2">
+      <ion-item class="item-thumbnail-left" ng-repeat="event in events track by event.event_id" style="padding-top: 0px; padding-bottom: 0px; padding-right: 0px;" ng-click="loadEvent($index)">
+        <img class="icon-day-{{event.day}}">
+        <div class="row" style="margin-top: 5px;">
+          <p style="font-size: 22px;">{{event.title}}</p>
+        </div>
+
+        <div class="row" style="height: 42px;">
+          <p data-ng-bind="event.description" style="white-space: normal; font-size: 16px;"></p>
+        </div>
+
+        <div class="row">
+          <div class="col" style="padding: 0px;">
+            <i class="icon ion-ios-flag" style="font-size:1.5em;" data-ng-bind="event.start"></i>
+          </div>
+          <div class="col" style="padding: 0px;">
+            <i class="icon ion-clock" style="font-size:1.5em;" data-ng-bind="event.duration"></i>
+          </div>
+          <div class="col" style="padding: 0px;">
+            <i class="icon ion-android-people" style="font-size:1.5em;" data-ng-bind="event.attendees"></i>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

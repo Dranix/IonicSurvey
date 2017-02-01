@@ -1,0 +1,43 @@
+<ion-view title="Feedback" id="page4">
+  <ion-nav-buttons side="right" class="has-header">
+    <button class="button button-icon icon No Icon" ng-click="submit()" ng-disabled="submitting"> Submit</button>
+  </ion-nav-buttons>
+  <ion-content padding="false" class="has-header">
+    <form id="feedback-form12" class="list">
+      <ion-toggle toggle-class="toggle-positive" ng-checked="true" id="feedback-toggle7" ng-model="data.useful_meeting" class="item-text-wrap">Do you feel that the meeting was useful?</ion-toggle>
+      <ion-toggle toggle-class="toggle-positive" ng-checked="true" id="feedback-toggle8" ng-model="data.clear_agenda" class="item-text-wrap">Was there a clear agenda for the meeting? </ion-toggle>
+      <ion-toggle toggle-class="toggle-positive" ng-checked="true" id="feedback-toggle9" ng-model="data.desired_outcome" class="item-text-wrap">Did you achieve the desired outcome? </ion-toggle>
+      <ion-toggle toggle-class="toggle-positive" ng-checked="true" id="feedback-toggle10" ng-model="data.take_note">Did someone take notes? </ion-toggle>
+      <div id="feedback-markdown4" class="show-list-numbers-and-dots"></div>
+      <ion-toggle toggle-class="toggle-positive" ng-checked="true" id="feedback-toggle12" ng-model="data.participant_contribute" class="item-text-wrap">Did every participant contribute value?</ion-toggle>
+      <div>
+        <div class="item-text-wrap item" style="border-bottom-style: none; padding-bottom: 0px;">How many people were involved in the meeting?</div>
+        <ks-swiper-container initial-slide="1" loop="false" show-nav-buttons="false" space-between="15" slides-per-view="2" override-parameters="{'centeredSlides':'true'}" on-ready="onReadySwiperQuestion6(swiper)">
+          <ks-swiper-slide class="swiper-slide" style="padding-bottom: 6px;margin-bottom: 0px;" ng-repeat="option in optionsForQuestion6">
+            <div class="card">
+              <img src="{{option.img}}">
+              <div class="item item-divider" style="font-size:15px;">
+                {{option.text}}
+              </div>
+            </div>
+          </ks-swiper-slide>
+        </ks-swiper-container>
+      </div>
+      <div>
+        <div class="item-text-wrap item" style="border-bottom-style: none; padding-bottom: 0px;">How many people were involved in the meeting?</div>
+        <ks-swiper-container initial-slide="2" loop="false" show-nav-buttons="false" space-between="15" slides-per-view="2" override-parameters="{'centeredSlides':'true'}" on-ready="onReadySwiperQuestion7(swiper)">
+          <ks-swiper-slide class="swiper-slide" style="padding-bottom: 6px;margin-bottom: 0px;" ng-repeat="option in optionsForQuestion7">
+            <div class="card">
+              <img src="{{option.img}}">
+              <div class="item item-divider" style="font-size:11px;">
+                {{option.text}}
+              </div>
+            </div>
+          </ks-swiper-slide>
+        </ks-swiper-container>
+      </div>
+      <div></div>
+    </form>
+    <div id="feedback-button-bar1" class="button-bar"></div>
+  </ion-content>
+</ion-view>

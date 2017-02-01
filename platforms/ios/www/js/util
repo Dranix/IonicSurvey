@@ -1,0 +1,74 @@
+Date.prototype.tohhmm = function () {
+    var hours   = this.getHours();
+    var minutes = this.getMinutes();
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    return hours+':'+minutes;
+}
+
+function calculateResponse(results) {
+    var totals = {
+        "useful_meeting": 0,
+        "clear_agenda": 0,
+        "desired_outcome": 0,
+        "take_note": 0,
+        "participant_contribute": 0,
+        "num_people_a": 0,
+        "num_people_b": 0,
+        "num_people_c": 0,
+        "atmosphere_a": 0,
+        "atmosphere_b": 0,
+        "atmosphere_c": 0,
+        "atmosphere_d": 0,
+        "atmosphere_e": 0
+    };
+
+    var count = results.length;
+
+    for (var i = 0; i < count; i++) {
+        totals.useful_meeting += (results[i].useful_meeting == "TRUE") ? 1 : 0;
+        totals.clear_agenda += (results[i].clear_agenda == "TRUE") ? 1 : 0;
+        totals.desired_outcome += (results[i].desired_outcome == "TRUE") ? 1 : 0;
+        totals.take_note += (results[i].take_note == "TRUE") ? 1 : 0;
+        totals.participant_contribute += (results[i].participant_contribute == "TRUE") ? 1 : 0;
+
+        if (results[i].num_people == "2") {
+            totals.num_people_a++;
+        } else if (results[i].num_people == "3 - 4") {
+            totals.num_people_b++;
+        } else {
+            totals.num_people_c++;
+        }
+
+        if (results[i].atmosphere == "Toxic") {
+            totals.atmosphere_a++;
+        } else if (results[i].atmosphere == "Could be better") {
+            totals.atmosphere_b++;
+        } else if (results[i].atmosphere == "Neutral") {
+            totals.atmosphere_c++;
+        } else if (results[i].atmosphere == "Pretty good") {
+            totals.atmosphere_d++;
+        } else {
+            totals.atmosphere_e++;
+        }
+    }
+
+    var percentages = {
+        "Q1": (totals.useful_meeting * 100 / count).toFixed(2),
+        "Q2": (totals.clear_agenda * 100 / count).toFixed(2),
+        "Q3": (totals.desired_outcome * 100 / count).toFixed(2),
+        "Q4": (totals.take_note * 100 / count).toFixed(2),
+        "Q5": (totals.participant_contribute * 100 / count).toFixed(2),
+        "Q6a": (totals.num_people_a * 100 / count).toFixed(0),
+        "Q6b": (totals.num_people_b * 100 / count).toFixed(0),
+        "Q6c": (totals.num_people_c * 100 / count).toFixed(0),
+        "Q7a": (totals.atmosphere_a * 100 / count).toFixed(0),
+        "Q7b": (totals.atmosphere_b * 100 / count).toFixed(0),
+        "Q7c": (totals.atmosphere_c * 100 / count).toFixed(0),
+        "Q7d": (totals.atmosphere_d * 100 / count).toFixed(0),
+        "Q7e": (totals.atmosphere_e * 100 / count).toFixed(0)
+    };
+    
+    return percentages;
+}
