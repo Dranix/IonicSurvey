@@ -29,7 +29,7 @@ angular.module('app.services', [])
                 return resp.data;
             });
         },
-        getEventsByEventId: function(params) {
+        getFeedbacksByEventId: function(params) {
             var actual_params = [];
             for (var k in params) {
                 if (params[k]) {
@@ -53,15 +53,14 @@ angular.module('app.services', [])
     var CLIENT_ID = "54415984672-mk6u0pf61td2rfhi9hovvdmje7gl3ono.apps.googleusercontent.com";
     var CLIENT_SECRET = "Sl6o64jRLc8q1p6HGviJ7Hat";
     var SCOPES = ["https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar"];
-
     var API_URL = "https://www.googleapis.com/calendar/v3/calendars/" + UserService.getUser().email+ "/events";
-    
     var REFESH_TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token";
             
     var ret = {
-        all: function(){
+        getEventsWithSurveyTag: function(){
             var currentTime = Math.floor(Date.now() / 1000);
             
+            //Refresh token if necessary
             if(currentTime > UserService.getUser().expiredIn){
                 var tokenRequestConfig = {
                     params:{
@@ -78,17 +77,17 @@ angular.module('app.services', [])
                         expiredIn: Math.floor(Date.now() / 1000) + resp.expires_in
                     });
                     
-                    return getCalendarList();
+                    return getEvents();
                 });
             }
             
-            return getCalendarList();
+            return getEvents();
         }
     };
 
     return ret;
     
-    function getCalendarList(){
+    function getEvents(){
         var oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         var oneWeekAhead = new Date();
@@ -100,18 +99,60 @@ angular.module('app.services', [])
             },
             params: {
                 'calendarId': 'primary',
-                'maxResults': 10,
+                'maxResults': 30,
                 'orderBy': 'startTime',
                 'singleEvents': true,
                 'showDeleted': false,
-                'q': '@Survey',
                 'timeMin': oneWeekAgo.toISOString(),
                 'timeMax': oneWeekAhead.toISOString()
             }
         };
     
         return $http.get(API_URL, config).then(function(resp){
-            return resp;
+            return processEvents(resp);
         });
+    }
+    
+    function processEvents(resp){
+        var events = [];
+        
+        if(resp.data && resp.data.items){
+            resp.data.items.forEach(function(item){
+                var event = {};
+                if(item.description && !item.description.includes("@Survey")){
+                    return;
+                }else if(item.description){
+                    event.description = item.description.replace(/@Survey/g,'');
+                }
+                
+                event.event_id = item.id;
+                event.title = item.summary;
+
+                var startTime = new Date(item.start.dateTime);
+                var endTime = new Date(item.end.dateTime);
+                event.duration = Math.floor((endTime - startTime)/60000);
+                event.start = startTime.tohhmm();
+                
+                var attendees = 0;
+                if(item.attendees){
+                    item.attendees.forEach(function(attende){
+                        if (attende.responseStatus.includes("tentative") ||  attende.responseStatus.includes("accepted")){
+                            attendees++;
+                        }
+                    });
+                    
+                    event.attendees = attendees + "/" + item.attendees.length;
+                }else{
+                    event.attendees = "1";
+                }
+
+                event.day = new Date(item.start.dateTime).getDay();
+                events.push(event);
+            });
+            
+            events.reverse();
+        }
+        
+        return events;
     }
 }])

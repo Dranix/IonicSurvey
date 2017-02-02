@@ -122,7 +122,7 @@ angular.module('app.controllers', [])
                     event_id: $stateParams.event_id
                 };
         
-                Survey.getEventsByEventId(params).then(function(resp){
+                Survey.getFeedbacksByEventId(params).then(function(resp){
                     params = calculateResponse(resp);
                     params.removeBackView = true;
                     $ionicLoading.hide();
@@ -312,41 +312,9 @@ angular.module('app.controllers', [])
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams, $ionicHistory, UserService, $state, GoogleCalendarAPI, Survey, $ionicLoading) {
     $scope.loadData = function(){
-        GoogleCalendarAPI.all().then(function(result){
-            if(result.data && result.data.items){
-                $scope.events = [];
-                
-                result.data.items.forEach(function(item){
-                    var event = {};
-                    event.event_id = item.id;
-                    event.title = item.summary;
-                    if(event.description){
-                        event.description = item.description.replace(/@Survey/g,'');
-                    } 
-                    var startTime = new Date(item.start.dateTime);
-                    var endTime = new Date(item.end.dateTime);
-                    event.duration = Math.floor((endTime - startTime)/60000);
-                    event.start = startTime.tohhmm();
-                    var attendees = 0;
-                    if(item.attendees){
-                        item.attendees.forEach(function(attende){
-                            if (attende.responseStatus.includes("tentative") ||  attende.responseStatus.includes("accepted")){
-                                attendees++;
-                            }
-                        });
-                        
-                        event.attendees = attendees + "/" + item.attendees.length;
-                    }else{
-                        event.attendees = "1";
-                    }
-
-                    event.day = new Date(item.start.dateTime).getDay();
-                    $scope.events.push(event);
-                });
-                
-                $scope.events.reverse();
-                $scope.$broadcast('scroll.refreshComplete');
-            }
+        GoogleCalendarAPI.getEventsWithSurveyTag().then(function(result){
+            $scope.events = result;
+            $scope.$broadcast('scroll.refreshComplete');
         }); 
     };
     
@@ -356,7 +324,7 @@ function ($scope, $stateParams, $ionicHistory, UserService, $state, GoogleCalend
             event_id: $scope.events[$index].event_id
         };
         
-        Survey.getEventsByEventId(params).then(function(resp){
+        Survey.getFeedbacksByEventId(params).then(function(resp){
             $ionicLoading.hide();
             if(resp.length && hasUserVoted(resp, UserService.getUser().email)){
                 params = calculateResponse(resp);
@@ -393,8 +361,6 @@ function ($scope, $stateParams, $ionicHistory, UserService, $state, GoogleCalend
         return false;
     }
     
-    $ionicLoading.show();
     $scope.loadData();
-    $ionicLoading.hide();
 }])
  
